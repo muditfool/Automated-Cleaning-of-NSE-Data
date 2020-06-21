@@ -1,0 +1,32 @@
+
+rm(list=ls())  ##clean the working environment
+
+setwd("") ## set the directory/folder path to where only 2 input files are saved i.e. NSE Combined report, NSE bhavcopy
+
+## A little overkill step but helps considering only one package is required.
+
+pack.req <- c( "dplyr")  
+pack.check <- pack.req[!(pack.req %in% installed.packages()[,"Package"])]; if(length(pack.req)) install.packages(pack.req)
+
+## Above step sometimes may require Restart of R so user discretion advised
+
+library(dplyr)
+
+FileNames <- list.files()
+
+## Ideally, FileNames[1] should work incase it does not, please copy the file names here
+
+OHLC_EQ          = read.csv(FileNames[1],sep = "," ,head = TRUE) %>%
+                    select(SYMBOL,SERIES,OPEN,HIGH, LOW, CLOSE,TOTTRDQTY,ISIN)
+
+Open_Interest_EQ = read.delim(FileNames[2],sep = "," ,head =  TRUE ) %>%
+                    select(Date,ISIN,Open.Interest)
+
+OHLC_OI_EQ       = as_tibble(left_join(OHLC_EQ, Open_Interest_EQ, by = 'ISIN')) %>%
+                   mutate(SERIES = Date) %>%
+                   mutate(dups = duplicated(ISIN)) %>%
+                   filter(dups == 'FALSE' & SERIES != 'EQ') %>%
+                   rename(fDate = SERIES) %>%
+                   select('SYMBOL', 'fDate', 'OPEN','HIGH', 'LOW', 'CLOSE', 'TOTTRDQTY','ISIN','Open.Interest')
+
+write.csv(OHLC_OI_EQ, file = sprintf('%s.csv',Sys.Date()), row.names = FALSE)
