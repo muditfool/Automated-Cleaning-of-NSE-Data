@@ -1,4 +1,4 @@
-# Automated-Cleaning-of-NSE-Data
+# Automated-Cleaning-of-NSE-Data-Using-R
 Combine NSE  "Bhav Copy" and "Combine Open Interest" file 
 
 The R code combines , removes duplicates upon merging and provides a transformed file ready for usage  in
