@@ -29,8 +29,7 @@ OHLC_OI_EQ_staging = as_tibble(left_join(OHLC_EQ, Open_Interest_EQ, by = 'ISIN')
 ## Identify index where duplicate rows exist  
 dup_ind = which(OHLC_OI_EQ_staging$dups == 'TRUE' & OHLC_OI_EQ_staging$SERIES != 'EQ')
 
-OHLC_OI_EQ = OHLC_OI_EQ_staging %>%
-             select(-dup_ind) %>%
+OHLC_OI_EQ = OHLC_OI_EQ_staging[-(dup_ind),] %>%
              select('SYMBOL', 'fDate', 'OPEN','HIGH', 'LOW', 'CLOSE', 'TOTTRDQTY','Open.Interest')
 
 write.csv(OHLC_OI_EQ, file = sprintf('%s.csv',Sys.Date()), row.names = FALSE)
